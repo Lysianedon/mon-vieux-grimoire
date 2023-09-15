@@ -74,11 +74,17 @@ exports.addRating = (req, res) => {
     Book.findById(req.params.id)
     .then(book => {
         //Make sure the user can't vote several times
-        book.ratings = book.ratings.filter(rating => rating.userId != req.auth.userId);
+        if (book.ratings.filter(rating => rating.userId == req.auth.userId).length) {
+            return res.status(401).json({ error: true, message: "Unauthorized" });
+        }
+        // book.ratings = book.ratings.filter(rating => rating.userId != req.auth.userId);
         book.ratings.push({userId: req.auth.userId, grade: req.body.rating});
 
         const sumRatings = book.ratings.reduce((sum, rating) => sum + rating.grade, 0);
-        const averageRating = sumRatings / book.ratings.length;
+        let averageRating = sumRatings / book.ratings.length;
+        if (averageRating % 1 !== 0) {
+            averageRating = averageRating.toFixed(1);
+        }
         Book.findByIdAndUpdate({_id: book._id}, {ratings: book.ratings, averageRating}, {new: true})
         .then(updatedBook => res.status(200).json(updatedBook))
         .catch(error => res.status(401).json(error));
