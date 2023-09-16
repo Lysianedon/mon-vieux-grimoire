@@ -24,7 +24,6 @@ const multerUpload = multer({ storage: storage }).single('image');
 const sharpUpload = (req, res, next) => {
   if (req.file) {
     const updatedFilename = `${Date.now()}_${req.file.filename.split('.')[0]}.webp`;
-    console.log("sharpUpload", req.file);
     sharp(req.file.path)
     .webp({ quality: 80 })
     .toFile(`images/${updatedFilename}`, (err) => {
