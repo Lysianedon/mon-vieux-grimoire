@@ -16,7 +16,7 @@ exports.signup = async (req, res) => {
         const newUser = await user.save();
         res.status(201).json(newUser);
     } catch (error) {
-        res.status(400).json(error);
+        res.status(500).json({error});
     }
 };
 
@@ -46,6 +46,6 @@ exports.login = async (req, res) => {
             token
         });
     } catch (error) {
-        res.status(500).json(error);
+        res.status(500).json({error});
     }
 };

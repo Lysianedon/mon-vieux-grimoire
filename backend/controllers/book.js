@@ -1,17 +1,16 @@
 const Book = require("../models/Book");
 const fs = require('fs');
-const sharp = require('sharp');
 
 exports.getBooks = (_req,res) => {
     Book.find()
     .then(books => res.status(200).json(books))
-    .catch(error => res.status(400).json({error}));
+    .catch(error => res.status(500).json({error}));
 };
 
 exports.getBookByID = (req,res) => {
     Book.findById(req.params.id)
     .then(book => res.status(200).json(book))
-    .catch(error => res.status(400).json({error}));
+    .catch(error => res.status(500).json({error}));
 };
 
 exports.getBestRatedBooks =  async (req,res) => {
@@ -81,6 +80,9 @@ exports.updateBook = async (req, res) => {
 exports.deleteBook = async (req, res) => {
     try {
       const book = await Book.findById(req.params.id);  
+      if (!book) {
+        return res.status(404).json({ error: 'Book not found' });
+      }
 
       if (book.userId != req.auth.userId) {
         return res.status(401).json({  error: "Unauthorized" }); 
@@ -103,6 +105,9 @@ exports.deleteBook = async (req, res) => {
 exports.addRating = async (req, res) => {
     try {
         const book = await Book.findById(req.params.id);
+        if (!book) {
+            return res.status(404).json({ error: 'Book not found' });
+          }
         if (book.ratings.filter(rating => rating.userId == req.auth.userId).length) {
             return res.status(401).json({ error: "Unauthorized" });
         }
