@@ -1,5 +1,6 @@
 const Book = require("../models/Book");
 const fs = require('fs');
+const sharp = require('sharp');
 
 exports.getBooks = (_req,res) => {
     Book.find()
@@ -28,7 +29,7 @@ exports.createBook = (req,res) => {
     const book = new Book({
         ...bookObj,
         userId: req.auth.userId,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.updatedFilename}`
       });
       book.save()
         .then(book => res.status(201).json(book))
@@ -36,19 +37,22 @@ exports.createBook = (req,res) => {
 };
 
 exports.updateBook = (req, res) => {
-   const bookObj = req.file ? 
-   {...JSON.parse(req.body.book),imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`, userId: req.auth.userId} 
-   : 
-   {...req.body, userId: req.auth.userId};
+    const bookObj = req.file ? 
+    {...JSON.parse(req.body.book),imageUrl: `${req.protocol}://${req.get('host')}/images/${req.updatedFilename}`, userId: req.auth.userId} 
+    : 
+    {...req.body, userId: req.auth.userId};
 
-   Book.findById(req.params.id)
-   .then(book => {
-       if (book.userId != req.auth.userId) {
-           res.status(401).json({message: "Not authorized"})
+    Book.findById(req.params.id)
+    .then(book => {
+        if (book.userId != req.auth.userId) {
+            res.status(401).json({message: "Not authorized"})
         } else {
+            const filename = book.imageUrl.split('/images/')[1];
+            fs.unlink(`images/${filename}`, () => { 
             Book.updateOne({_id: book._id}, bookObj)
             .then(book => res.status(200).json(book))
             .catch(error => res.status(401).json(error));
+            }); 
     }
    })
    .catch(error => res.status(400).json(error))
@@ -77,7 +81,7 @@ exports.addRating = (req, res) => {
         if (book.ratings.filter(rating => rating.userId == req.auth.userId).length) {
             return res.status(401).json({ error: true, message: "Unauthorized" });
         }
-        // book.ratings = book.ratings.filter(rating => rating.userId != req.auth.userId);
+  
         book.ratings.push({userId: req.auth.userId, grade: req.body.rating});
 
         const sumRatings = book.ratings.reduce((sum, rating) => sum + rating.grade, 0);
