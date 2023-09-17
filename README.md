@@ -19,12 +19,12 @@ Install project dependencies by running the following command at the root of the
 npm install
 
 ## Running the Project
-Start the server using the following command: 
+1. Start the server using the following command: 
 nodemon server.js
 
 The server should now be running.
 
-Go to the frontend folder and run the commands:
+2. Go to the frontend folder and run the commands:
 npm install
 npm start
 
