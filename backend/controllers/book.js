@@ -54,7 +54,7 @@ exports.updateBook = async (req, res) => {
       }
   
       if (book.userId != req.auth.userId) {
-        return res.status(401).json({ error: 'Not authorized' });
+        return res.status(403).json({ error: 'Unauthorized request' });
       }
 
       const filename = book.imageUrl.split('/images/')[1];
@@ -109,7 +109,7 @@ exports.addRating = async (req, res) => {
             return res.status(404).json({ error: 'Book not found' });
           }
         if (book.ratings.filter(rating => rating.userId == req.auth.userId).length) {
-            return res.status(401).json({ error: "Unauthorized" });
+            return res.status(403).json({ error: "Unauthorized request" });
         }
         book.ratings.push({userId: req.auth.userId, grade: req.body.rating});
         const sumRatings = book.ratings.reduce((sum, rating) => sum + rating.grade, 0);
