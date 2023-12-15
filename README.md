@@ -1,5 +1,5 @@
 # Mon Vieux Grimoire 
-![Mon vieux Grimoire](https://github.com/Lysianedon/mon-vieux-grimoire/blob/master/mon-vieux-grimoire.gif?raw=true)
+![Mon vieux Grimoire]([https://github.com/Lysianedon/mon-vieux-grimoire/blob/master/mon-vieux-grimoire.gif?raw=true](https://github.com/Lysianedon/mon-vieux-grimoire/blob/master/backend/mon-vieux-grimoire.gif?raw=true)
 
 ## Description
 Mon Vieux Grimoire is a website for cataloging and rating books. 
